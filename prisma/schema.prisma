@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model BotInstance {
+  id         String    @id @default(cuid())
+  name       String    @unique
+  token      String
+  templateId String
+  ownerId    String
+  status     BotStatus @default(STOPPED)
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+enum BotStatus {
+  RUNNING
+  STOPPED
+  EXPIRED
+}
