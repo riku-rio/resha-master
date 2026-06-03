@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits, REST, Routes } = require("discord.js");
+const { Client, Collection, GatewayIntentBits, REST, Routes, Events } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
 const { loadEnv } = require("../config/env");
@@ -98,7 +98,7 @@ async function startChildBot(botDir) {
     const files = getAllJsFiles(eventsPath);
     for (const file of files) {
       const event = require(file);
-      if (event.once || event.name === "clientReady") {
+      if (event.once) {
         client.once(event.name, (...args) => event.execute(...args));
       } else {
         client.on(event.name, (...args) => event.execute(...args));
