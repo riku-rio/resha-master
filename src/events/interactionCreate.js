@@ -3,6 +3,24 @@ const { Events } = require("discord.js");
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
+    // Route component interactions (buttons, select menus, etc.)
+    if (interaction.isMessageComponent()) {
+      const handler = interaction.client.componentHandlers?.find((h) =>
+        h.customId === interaction.customId || (h.customIdPrefix && interaction.customId.startsWith(h.customIdPrefix))
+      );
+      if (handler) await handler.execute(interaction);
+      return;
+    }
+
+    // Route modal submissions
+    if (interaction.isModalSubmit()) {
+      const handler = interaction.client.modalHandlers?.find((h) =>
+        h.customId === interaction.customId || (h.customIdPrefix && interaction.customId.startsWith(h.customIdPrefix))
+      );
+      if (handler) await handler.execute(interaction);
+      return;
+    }
+
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);

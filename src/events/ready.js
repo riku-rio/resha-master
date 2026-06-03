@@ -4,6 +4,8 @@ module.exports = {
   name: Events.ClientReady,
   once: true,
   execute(client) {
-    console.log(`[Master] Logged in as ${client.user.tag}`);
+    const botId = client.appEnv?.botId;
+    const prefix = botId ? `Child:${botId}` : "Master";
+    console.log(`[${prefix}] Logged in as ${client.user.tag}`);
   },
 };

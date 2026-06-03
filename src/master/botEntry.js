@@ -51,6 +51,16 @@ async function startChildBot(botDir) {
     }
   });
 
+  // Startup sweep — evict stale guilds that were joined before this process started
+  client.once(Events.ClientReady, async () => {
+    for (const [id, guild] of client.guilds.cache) {
+      if (id !== guildId) {
+        console.warn(`[Child:${botId}] Found unauthorized guild ${id} on startup, leaving.`);
+        await guild.leave();
+      }
+    }
+  });
+
   // Load prefix commands
   const prefixCommandsPath = path.join(botDir, "src/prefixCommands");
   if (fs.existsSync(prefixCommandsPath)) {

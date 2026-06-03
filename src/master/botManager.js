@@ -4,16 +4,20 @@ const { run } = require("./botRunner");
 // Map of botId → ChildProcess
 const processMap = new Map();
 
-function onBotExit(botId, code) {
-  // Update DB status to STOPPED when a bot exits unexpectedly
-  prisma.botInstance
-    .update({
+async function onBotExit(botId, code) {
+  // If processMap still contains this bot, stopBot/restartBot is managing the
+  // lifecycle and will write the correct status itself — don't race against it.
+  if (processMap.has(botId)) return;
+
+  // Unexpected exit: mark as STOPPED in the DB.
+  try {
+    await prisma.botInstance.update({
       where: { botId },
       data: { status: "STOPPED" },
-    })
-    .catch((err) => {
-      console.error(`[Manager] Failed to update status for bot ${botId}:`, err.message);
     });
+  } catch (err) {
+    console.error(`[Manager] Failed to update status for bot ${botId}:`, err.message);
+  }
 }
 
 async function startAllBots() {

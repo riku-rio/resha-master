@@ -2,6 +2,7 @@ const { fork } = require("child_process");
 const path = require("path");
 
 const botEntryPath = path.join(__dirname, "./botEntry.js");
+const childBotsRoot = path.resolve(__dirname, "../../child_bots");
 
 /**
  * @param {object} bot - BotInstance from DB
@@ -11,7 +12,11 @@ const botEntryPath = path.join(__dirname, "./botEntry.js");
 function run(bot, processMap, onExit) {
   const { botId, botToken, guildId, buyerId, templateId, subscriptionExpiresAt, prefix, botName } = bot;
 
-  const botDir = path.join(__dirname, `../../child_bots/${botName}`);
+  const safeName = path.basename(botName);
+  const botDir = path.resolve(childBotsRoot, safeName);
+  if (!botDir.startsWith(childBotsRoot + path.sep)) {
+    throw new Error(`[Runner] Path traversal detected for botName: ${botName}`);
+  }
 
   const child = fork(botEntryPath, [], {
     env: {
@@ -21,7 +26,10 @@ function run(bot, processMap, onExit) {
       GUILD_ID: guildId,
       BUYER_ID: buyerId,
       TEMPLATE_ID: templateId,
-      SUBSCRIPTION_EXPIRES_AT: subscriptionExpiresAt.toISOString(),
+      SUBSCRIPTION_EXPIRES_AT:
+        subscriptionExpiresAt instanceof Date && !isNaN(subscriptionExpiresAt)
+          ? subscriptionExpiresAt.toISOString()
+          : "",
       PREFIX: prefix,
       BOT_DIR: botDir,
     },
@@ -34,7 +42,13 @@ function run(bot, processMap, onExit) {
   child.on("exit", (code, signal) => {
     processMap.delete(botId);
     console.warn(`[Runner] Bot ${botName} (${botId}) exited. Code: ${code}, Signal: ${signal}`);
-    if (onExit) onExit(botId, code, signal);
+    if (onExit) {
+      try {
+        onExit(botId, code, signal);
+      } catch (err) {
+        console.error(`[Runner] onExit callback threw for bot ${botName} (${botId}):`, err);
+      }
+    }
   });
 
   child.on("error", (err) => {
