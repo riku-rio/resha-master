@@ -7,15 +7,18 @@ datasource db {
 }
 
 model BotInstance {
-  id         String    @id @default(cuid())
-  name       String    @unique
-  token      String
-  templateId String
-  ownerId    String
-  status     BotStatus @default(STOPPED)
-  expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  botName     String    @unique
+  botToken    String
+  botId       String    @unique
+  guildId     String
+  templateId  String
+  buyerId     String
+  prefix      String    @default("!")
+  status      BotStatus @default(STOPPED)
+  subscriptionExpiresAt  DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 enum BotStatus {
