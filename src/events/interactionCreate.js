@@ -34,10 +34,14 @@ module.exports = {
     } catch (error) {
       console.error(`[Master] Command ${interaction.commandName} failed:`, error.message);
       const content = "An error occurred while executing this command.";
-      if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content, flags: 64 });
-      } else {
-        await interaction.followUp({ content, flags: 64 });
+      try {
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.reply({ content, flags: 64 });
+        } else {
+          await interaction.followUp({ content, flags: 64 });
+        }
+      } catch (replyError) {
+        console.error(`[Master] Could not send error reply for ${interaction.commandName}:`, replyError.message);
       }
     }
   },
