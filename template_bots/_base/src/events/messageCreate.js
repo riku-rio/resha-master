@@ -1,26 +1,34 @@
-const { Events } = require('discord.js');
+const { Events } = require("discord.js");
 
 module.exports = {
   name: Events.MessageCreate,
-  async execute(message, client) {
+  async execute(message) {
     if (message.author.bot) return;
 
-    const prefix = client.appEnv?.prefix || process.env.PREFIX || '!';
+    // Check for "hello" (case-insensitive)
+    if (message.content.toLowerCase() === "hello") {
+      await message.reply("Hey");
+      return;
+    }
+
+    const prefix = message.client.appEnv?.prefix || "!";
 
     if (!message.content.startsWith(prefix)) return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
-    const command = client.prefixCommands.get(commandName) || client.prefixCommands.get(client.aliases.get(commandName));
+    const command =
+      message.client.prefixCommands.get(commandName) ||
+      message.client.prefixCommands.get(message.client.aliases.get(commandName));
 
     if (!command) return;
 
     try {
-      await command.execute(message, args, client);
+      await command.execute(message, args);
     } catch (error) {
       console.error(error);
-      await message.reply('There was an error executing that command!');
+      await message.reply({ content: "There was an error trying to execute that command!" });
     }
   },
 };
