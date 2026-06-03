@@ -1,12 +1,10 @@
-import { PrismaLibSQL } from '@prisma/adapter-libsql'
-import { createClient } from '@libsql/client'
-import { PrismaClient } from '@prisma/client'
+require('dotenv').config({ quiet: true })
+const { PrismaLibSql } = require('@prisma/adapter-libsql')
+const { PrismaClient } = require('@prisma/client')
 
-const client = createClient({
-  url: 'file:./dev.db',
+const adapter = new PrismaLibSql({
+  url: process.env.DATABASE_URL,
 })
-
-const adapter = new PrismaLibSQL(client)
 const prisma = new PrismaClient({ adapter })
 
-export default prisma
+module.exports = prisma
