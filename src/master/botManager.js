@@ -38,7 +38,11 @@ async function startAllBots() {
   console.log(`[Manager] Starting ${bots.length} bot(s)...`);
 
   for (const bot of bots) {
-    await startBot(bot);
+    try {
+      await startBot(bot);
+    } catch {
+      // Error already logged inside startBot; continue with remaining bots.
+    }
   }
 }
 
@@ -56,6 +60,7 @@ async function startBot(bot) {
     });
   } catch (err) {
     console.error(`[Manager] Failed to start bot ${bot.botId}:`, err.message);
+    throw err;
   }
 }
 

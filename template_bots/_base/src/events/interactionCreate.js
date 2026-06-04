@@ -1,5 +1,27 @@
 const { Events } = require("discord.js");
 
+/**
+ * Shared error-handling wrapper for all interaction handlers.
+ * Mirrors the error-handling used by the chat-input command path.
+ */
+async function runHandler(handler, interaction) {
+  try {
+    await handler.execute(interaction);
+  } catch (error) {
+    console.error(`Handler ${interaction.customId} failed:`, error.message);
+    const content = "An error occurred while handling this interaction.";
+    try {
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.reply({ content, flags: 64 });
+      } else {
+        await interaction.followUp({ content, flags: 64 });
+      }
+    } catch (replyError) {
+      console.error(`Could not send error reply for ${interaction.customId}:`, replyError.message);
+    }
+  }
+}
+
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
@@ -8,7 +30,7 @@ module.exports = {
       const handler = interaction.client.componentHandlers?.find((h) =>
         h.customId === interaction.customId || (h.customIdPrefix && interaction.customId.startsWith(h.customIdPrefix))
       );
-      if (handler) await handler.execute(interaction);
+      if (handler) await runHandler(handler, interaction);
       return;
     }
 
@@ -17,7 +39,7 @@ module.exports = {
       const handler = interaction.client.modalHandlers?.find((h) =>
         h.customId === interaction.customId || (h.customIdPrefix && interaction.customId.startsWith(h.customIdPrefix))
       );
-      if (handler) await handler.execute(interaction);
+      if (handler) await runHandler(handler, interaction);
       return;
     }
 
