@@ -19,6 +19,10 @@ function loadMasterEnv() {
   const prefix = process.env.PREFIX || "!";
   const nodeEnv = String(process.env.NODE_ENV || "development").toLowerCase();
   const isProduction = nodeEnv === "production";
+  const quattroOwners = (process.env.QUATTRO_OWNERS || "")
+    .split(",")
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0);
 
   const missing = [];
   if (!token) missing.push("DISCORD_TOKEN");
@@ -37,6 +41,7 @@ function loadMasterEnv() {
     prefix,
     nodeEnv,
     isProduction,
+    quattroOwners,
   };
 }
 
