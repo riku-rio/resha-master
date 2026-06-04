@@ -1,4 +1,17 @@
+# Dependencies
 node_modules/
+
+# Environment
 .env
 
+# Database
+dev.db
+dev.db-journal
+*.db
+*.db-journal
+
+# Prisma generated client
 /src/generated/prisma
+
+# Child bots (runtime generated — contain real tokens)
+child_bots/
