@@ -1,0 +1,32 @@
+{
+  "supportRoleIds": [],
+  "transcriptChannelId": "1514553416464994375",
+  "ticketCategoryId": "1514551435474243665",
+  "maxOpenTickets": 3,
+  "ticketTypes": [
+    {
+      "label": "🛠️ Support",
+      "value": "support",
+      "description": "General support questions"
+    },
+    {
+      "label": "💰 Billing",
+      "value": "billing",
+      "description": "Payment or subscription issues"
+    },
+    {
+      "label": "🐛 Bug Report",
+      "value": "bug_report",
+      "description": "Report a bug or issue"
+    },
+    {
+      "label": "💡 Suggestion",
+      "value": "suggestion",
+      "description": "Suggest a feature or improvement"
+    }
+  ],
+  "embedColor": 5793266,
+  "embedTitle": "🎫 Support Tickets",
+  "embedDescription": "Need help? Open a ticket below and our team will assist you as soon as possible.",
+  "embedFooter": "Response time: typically under 24 hours"
+}

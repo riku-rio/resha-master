@@ -14,5 +14,5 @@ dev.db-journal
 # Prisma generated client
 /src/generated/prisma
 
-# Child bots (runtime generated — contain real tokens)
-child_bots/
+# # Child bots (runtime generated — contain real tokens)
+# child_bots/
